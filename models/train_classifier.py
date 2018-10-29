@@ -12,6 +12,7 @@ from sklearn.metrics import confusion_matrix
 from sklearn.model_selection import GridSearchCV
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.multioutput import MultiOutputClassifier
+from sklearn.svm import SVC
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline, FeatureUnion
 from sklearn.base import BaseEstimator, TransformerMixin
@@ -50,7 +51,7 @@ def tokenize(text):
     '''
     
     # We first remove punctuation characters and convert all text to lower case
-    text = re.sub(r"[^a-zA-Z0-9]", " ", text.lower())
+    text = re.sub(r"[^a-zA-Z0-9]", " ", text.lower().strip())
 
     # Get the word tokens
     raw_tokens = word_tokenize(text)
@@ -71,14 +72,22 @@ def build_model():
     '''
     
     # Define the pipeline
+    # Going with RandomForestClassifier after trying SVC
     pipeline = Pipeline([('vect', CountVectorizer(tokenizer=tokenize)),
                          ('tfidf', TfidfTransformer()),
                         ('clf', MultiOutputClassifier(RandomForestClassifier()))
                     ])
     
+    # SVC produced far worse prediction results than RandomForest
+#    pipeline = Pipeline([('vect', CountVectorizer(tokenizer=tokenize)),
+#                         ('tfidf', TfidfTransformer()),
+#                        ('clf', MultiOutputClassifier(SVC(gamma='auto')))
+#                    ])
+    
+    
     # Specify the grid search parameters
     # NOTE: Performing the grid search is very time consuming.
-    # The final commit of this code has commented out many of the parameters as the search had to be run
+    # The final commit of this code has many of the parameters commented out as the search had to be run
     # with only a few parameters at a time to avoid the workspace timing out!
     
     parameters = {
@@ -106,9 +115,6 @@ def evaluate_model(model, X_test, Y_test, category_names):
     
     # Run predict to create the prediction values
     y_pred = model.predict(X_test)
-    
-    # Convert to DataFrame for the next step
-    yp = pd.DataFrame(y_pred)
     
     # Print out the classification report containing the precision, recall and F1 scores for the model
     print(classification_report(Y_test, y_pred, target_names=category_names))

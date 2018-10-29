@@ -48,7 +48,8 @@ def clean_data(df):
     df.drop_duplicates(inplace=True)
     
     # A few rows in the 'related' column have values not in [0,1]. We drop those.
-    df = df[df.related < 2]
+#    df = df[df.related < 2]
+    df.drop('related', axis=1, inplace=True)
     
     # Returning the cleaned DataFrame
     return df

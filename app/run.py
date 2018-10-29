@@ -46,6 +46,9 @@ def index():
     cats_counts = df_cats[df_cats[category_cols] == 1].count().sort_values(ascending=False)
     cats_names = list(cats_counts.index)
     
+    sum_rows = df_cats.sum(axis=1).value_counts()
+    sum_names = list(sum_rows.index)
+    
     # create visuals
     graphs = [
         {
@@ -63,6 +66,24 @@ def index():
                 },
                 'xaxis': {
                     'title': "Category"
+                }
+            }
+        },
+        {
+            'data': [
+                Bar(
+                    x=sum_names,
+                    y=sum_rows
+                )
+            ],
+
+            'layout': {
+                'title': 'Number of categories per message',
+                'yaxis': {
+                    'title': "Count"
+                },
+                'xaxis': {
+                    'title': "Number of categories"
                 }
             }
         }

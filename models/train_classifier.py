@@ -102,6 +102,7 @@ def build_model():
     cv = GridSearchCV(pipeline, param_grid=parameters, verbose=2)
     return cv
 
+
 # Function to evaluate a model by predicting y values from the test set and creating a classification report
 def evaluate_model(model, X_test, Y_test, category_names):
     '''
